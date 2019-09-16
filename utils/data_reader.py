@@ -38,11 +38,11 @@ def load_dev_dataset(path):
 
 
 def load_train_dataset(path):
-    if not os.path.exists(path + config.TRAIN_FILE):
+    if not os.path.exists(path + config.REPARIED_TRAIN_FILE):
         raise ValueError('DataSet path does not exist ')
         return
 
-    data = pd.read_json(path + config.TRAIN_FILE)
+    data = pd.read_json(path + config.REPARIED_TRAIN_FILE)
     # reform labels
     data['label'] = data['label'].map(
         lambda label: -1 if label == 'negative' else (0 if label == 'neutral' else 1))
@@ -56,7 +56,7 @@ def convert_examples_to_features(pandas, max_seq_length, tokenizer):
     for i, r in pandas.iterrows():
         first_tokens = tokenizer.tokenize(r['sentence1'])
         sec_tokens = tokenizer.tokenize(r['sentence2'])
-        tokens = ["[CLS]"] + first_tokens + ["SEP"] + sec_tokens
+        tokens = ["[CLS]"] + first_tokens + ["[SEP]"] + sec_tokens
         if len(sec_tokens) + len(first_tokens) > max_seq_length - 1:
             tokens = tokens[:(max_seq_length - 1)]
         tokens = tokens + ["[SEP]"]

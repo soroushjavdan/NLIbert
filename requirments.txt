@@ -3,3 +3,4 @@ torch
 tqdm
 pytorch_pretrained_bert
 sklearn
+matplotlib

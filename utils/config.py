@@ -16,9 +16,10 @@ parser.add_argument("--model_config_path", type=str, default="None")
 arg = parser.parse_args()
 print(arg)
 
-TRAIN_FILE = 'dialogue_nli_EXTRA_uu_train.json'
-TEST_FILE = 'dialogue_nli_EXTRA_uu_test.json'
-DEV_FILE = 'dialogue_nli_EXTRA_uu_dev.json'
+TRAIN_FILE = 'dialogue_nli_EXTRA_uu_train.jsonl'
+REPARIED_TRAIN_FILE = 'repaired_train.json'
+TEST_FILE = 'dialogue_nli_EXTRA_uu_test.jsonl'
+DEV_FILE = 'dialogue_nli_EXTRA_uu_dev.jsonl'
 MAX_SEQ_LENGTH = 210
 
 data_path = arg.data_path
