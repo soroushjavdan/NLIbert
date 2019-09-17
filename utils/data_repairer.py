@@ -10,7 +10,8 @@ def repair_train_data():
             txt = f.readline()
             t = txt[:-44]
             t = t + ']'
-            json_obj = json.load(t)
+            n = json.dumps(t)
+            json_obj = json.loads(n)
             with open(config.REPARIED_TRAIN_FILE, 'w') as fout:
                 json.dump(json_obj, fout)
     else:
