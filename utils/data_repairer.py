@@ -12,7 +12,7 @@ def repair_train_data():
             t = t + ']'
             n = json.dumps(t)
             json_obj = json.loads(n)
-            with open(config.REPARIED_TRAIN_FILE, 'w') as fout:
+            with open('./data/dialogue_nli_extra/'+config.REPARIED_TRAIN_FILE, 'w') as fout:
                 json.dump(json_obj, fout)
     else:
         raise ValueError('palce the training data in /data/dialogue_nli_extra/')
