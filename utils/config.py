@@ -9,6 +9,7 @@ parser.add_argument("--epochs", type=int, default=4)
 parser.add_argument("--plot_path", type=str, default='save/plot')
 parser.add_argument("--bert_model", type=str, default='bert-base-cased')
 parser.add_argument("--gpu", action='store_true')
+parser.add_argument("--need_repair", action='store_true')
 parser.add_argument("--load_frompretrain", type=str, default="None")
 parser.add_argument("--model_state_path", type=str, default="None")
 parser.add_argument("--model_config_path", type=str, default="None")
@@ -27,6 +28,7 @@ save_path = arg.save_path
 lr = arg.lr
 batch_size = arg.batch_size
 plot_path = arg.plot_path
+need_repair = arg.need_repair
 bert_model = arg.bert_model
 epochs = arg.epochs
 USE_GPU = arg.gpu
