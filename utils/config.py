@@ -1,7 +1,7 @@
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--data_path", type=str, default="data/dialogue_nli_extra")
+parser.add_argument("--data_path", type=str, default="data/dialogue_nli_extra/")
 parser.add_argument("--save_path", type=str, default='save/')
 parser.add_argument("--lr", type=float, default=5e-5)
 parser.add_argument("--batch_size", type=int, default=32)
