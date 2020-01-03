@@ -20,7 +20,7 @@ def load_test_dataset(path):
     data = pd.read_json(path + config.TEST_FILE)
     # reform labels
     data['label'] = data['label'].map(
-        lambda label: -1 if label == 'negative' else (0 if label == 'neutral' else 1))
+        lambda label: 0 if label == 'negative' else (1 if label == 'neutral' else 2))
 
     return data
 
@@ -32,7 +32,7 @@ def load_dev_dataset(path):
     data = pd.read_json(path + config.DEV_FILE)
     # reform labels
     data['label'] = data['label'].map(
-        lambda label: -1 if label == 'negative' else (0 if label == 'neutral' else 1))
+        lambda label: 0 if label == 'negative' else (1 if label == 'neutral' else 2))
 
     return data
 
@@ -45,7 +45,7 @@ def load_train_dataset(path):
     data = pd.read_json(path + config.REPARIED_TRAIN_FILE)
     # reform labels
     data['label'] = data['label'].map(
-        lambda label: -1 if label == 'negative' else (0 if label == 'neutral' else 1))
+        lambda label: 0 if label == 'negative' else (1 if label == 'neutral' else 2))
 
     return data
 
