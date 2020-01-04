@@ -72,16 +72,21 @@ class ClassificationModel:
         self.model.load_state_dict(torch.load(path_model))
         self.__init_model()
 
-    def save_model(self, path_model, path_config, acc, f1):
+    def save_model(self, path_model, path_config, epoch_n, acc, f1):
+
+        if not os.path.exists(path_model):
+            os.makedirs(path_model)
 
         model_save_path = os.path.join(path_model,
-                                       'model_{}_{:.4f}_{:.4f}_{:.4f}'.format(iter, acc, f1))
+                                       'model_{:.4f}_{:.4f}_{:.4f}'.format(epoch_n, acc, f1))
 
         torch.save(self.model.state_dict(), model_save_path)
 
         if not os.path.exists(path_config):
             os.makedirs(path_config)
-        with open(path_config, 'w') as f:
+
+        model_config_path = os.path.join(path_config, 'config.cf')
+        with open(model_config_path, 'w') as f:
             f.write(self.model.config.to_json_string())
 
     def train(self, epochs, batch_size=config.batch_size, lr=config.lr, plot_path=None , model_path=None, config_path=None):
@@ -106,41 +111,7 @@ class ClassificationModel:
 
         train_data = TensorDataset(all_input_ids, all_input_mask, all_segment_ids, all_label_ids)
 
-        # class weighting
-        _, counts = np.unique(self.train_df['label'], return_counts=True)
-        class_weights = [sum(counts) / c for c in counts]
-        # assign wight to each input sample
-        example_weights = [class_weights[e] for e in self.train_df['label']]
-        sampler = WeightedRandomSampler(example_weights, len(self.train_df['label']))
-        train_dataloader = DataLoader(train_data, sampler=sampler, batch_size=batch_size)
-
-        self.model.train()
-        for e in range(epochs):
-            print(f"Epoch {e}")
-            f1, acc = self.val()
-            print(f"\nF1 score: {f1}, Accuracy: {acc}")
-            if model_path is not None and config_path is not None:
-                self.save_model(model_path, config_path, acc, f1)
-            for step, batch in enumerate(tqdm(train_dataloader, desc="Iteration")):
-                batch = tuple(t.to(self.device) for t in batch)
-                input_ids, input_mask, segment_ids, label_ids = batch
-
-                loss = self.model(input_ids, segment_ids, input_mask, label_ids)
-                loss.backward()
-
-                if plot_path is not None :
-                    self.plt_y.append(loss.item())
-                    self.plt_x.append(nb_tr_steps)
-                    self.save_plot(plot_path)
-
-                nb_tr_steps += 1
-                self.optimizer.step()
-                self.optimizer.zero_grad()
-
-                if self.gpu:
-                    torch.cuda.empty_cache()
-
-    def val(self, batch_size=config.batch_size):
+        # eval dataloader
         eval_features = data_reader.convert_examples_to_features(self.val_df, config.MAX_SEQ_LENGTH, self.tokenizer)
 
         all_input_ids = torch.tensor([f.input_ids for f in eval_features], dtype=torch.long)
@@ -151,6 +122,44 @@ class ClassificationModel:
 
         eval_sampler = SequentialSampler(eval_data)
         eval_dataloader = DataLoader(eval_data, sampler=eval_sampler, batch_size=batch_size)
+
+        # class weighting
+        _, counts = np.unique(self.train_df['label'], return_counts=True)
+        class_weights = [sum(counts) / c for c in counts]
+        # assign wight to each input sample
+        example_weights = [class_weights[e] for e in self.train_df['label']]
+        sampler = WeightedRandomSampler(example_weights, len(self.train_df['label']))
+        train_dataloader = DataLoader(train_data, sampler=sampler, batch_size=batch_size)
+
+        self.model.train()
+        for e in range(epochs):
+            print("Epoch {}".format(e))
+            if e is not 0:
+                f1, acc = self.val(eval_dataloader)
+                print("\nF1 score: {}, Accuracy: {}".format(f1, acc))
+            if model_path is not None and config_path is not None:
+                if e is not 0:
+                    self.save_model(model_path, config_path, e, acc, f1)
+            for step, batch in enumerate(tqdm(train_dataloader, desc="Iteration")):
+                batch = tuple(t.to(self.device) for t in batch)
+                input_ids, input_mask, segment_ids, label_ids = batch
+
+                loss = self.model(input_ids, segment_ids, input_mask, label_ids)
+                loss.backward()
+
+                #if plot_path is not None:
+                #    self.plt_y.append(loss.item())
+                #    self.plt_x.append(nb_tr_steps)
+                #    self.save_plot(plot_path)
+
+                nb_tr_steps += 1
+                self.optimizer.step()
+                self.optimizer.zero_grad()
+
+                if self.gpu:
+                    torch.cuda.empty_cache()
+
+    def val(self, eval_dataloader, batch_size=config.batch_size):
 
         f1, acc = 0, 0
         nb_eval_examples = 0
