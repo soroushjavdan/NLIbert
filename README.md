@@ -25,7 +25,7 @@ because of problem during compression process the training file need to be repai
 #### Third
 install the requirements
 ```console
-❱❱❱ pip install requirements.txt
+❱❱❱ pip install -r requirements.txt
 ```
 Now we are good to go !!
 
