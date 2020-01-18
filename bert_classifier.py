@@ -12,9 +12,9 @@ import os
 import matplotlib.pyplot as plt
 
 LABELS = {
-    "negative": -1,
-    "neutral": 0,
-    "positive": 1
+    "negative": 0,
+    "neutral": 1,
+    "positive": 2
 }
 
 
