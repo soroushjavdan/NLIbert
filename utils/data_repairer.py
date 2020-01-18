@@ -10,6 +10,7 @@ def repair_train_data():
             txt = f.readline()
             t = txt[:-44]
             t = t + ']'
+            t = t.strip("'<>() ").replace('\'', '\"')
             n = json.dumps(t)
             json_obj = json.loads(n)
             with open('./data/dialogue_nli_extra/'+config.REPARIED_TRAIN_FILE, 'w') as fout:

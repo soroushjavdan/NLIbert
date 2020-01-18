@@ -61,7 +61,9 @@ def convert_examples_to_features(pandas, max_seq_length, tokenizer):
             tokens = tokens[:(max_seq_length - 1)]
         tokens = tokens + ["[SEP]"]
 
-        segment_ids = [0] * len(tokens)
+        segment_ids = [0] * (len(first_tokens) + 2)
+        segment_ids += [0] * (len(sec_tokens) + 1)
+
         input_ids = tokenizer.convert_tokens_to_ids(tokens)
 
         input_mask = [1] * len(input_ids)
@@ -71,10 +73,15 @@ def convert_examples_to_features(pandas, max_seq_length, tokenizer):
         input_mask += padding
         segment_ids += padding
 
+        assert len(segment_ids) == max_seq_length
+        assert len(input_ids) == max_seq_length
+        assert len(input_mask) == max_seq_length
+
         features.append(
             BertInputFeatures(
                 input_ids=input_ids,
                 input_mask=input_mask,
                 segment_ids=segment_ids,
                 label_id=r['label']))
+
     return features
