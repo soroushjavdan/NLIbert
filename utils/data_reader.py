@@ -62,7 +62,7 @@ def convert_examples_to_features(pandas, max_seq_length, tokenizer):
         tokens = tokens + ["[SEP]"]
 
         segment_ids = [0] * (len(first_tokens) + 2)
-        segment_ids += [0] * (len(sec_tokens) + 1)
+        segment_ids += [1] * (len(sec_tokens) + 1)
 
         input_ids = tokenizer.convert_tokens_to_ids(tokens)
 
