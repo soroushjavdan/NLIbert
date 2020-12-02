@@ -191,7 +191,7 @@ class ClassificationModel:
         plt.close()
 
     def create_test_predictions(self, path):
-        tests_features = data_reader.convert_examples_to_features(self.test_df, [-1] * len(self.test_df),
+        tests_features = data_reader.convert_examples_to_features(self.test_df,
                                                                  config.MAX_SEQ_LENGTH,
                                                                  self.tokenizer)
 
@@ -199,7 +199,7 @@ class ClassificationModel:
         all_input_mask = torch.tensor([f.input_mask for f in tests_features], dtype=torch.long)
         all_segment_ids = torch.tensor([f.segment_ids for f in tests_features], dtype=torch.long)
         all_label_ids = torch.tensor([f.label_id for f in tests_features], dtype=torch.long)
-        all_sample_ids = [f.label_id for f in tests_features]
+        all_sample_ids = [f.sample_id for f in tests_features]
 
         test_data = TensorDataset(all_input_ids, all_input_mask, all_segment_ids, all_label_ids)
 
@@ -221,6 +221,6 @@ class ClassificationModel:
         with open(path, "w") as csv_file:
             writer = csv.writer(csv_file, delimiter=',')
             for i, prediction in enumerate(predictions):
-                writer.writerow([int(all_sample_ids[i]), prediction])
+                writer.writerow([all_sample_ids[i], prediction])
 
         return predictions
