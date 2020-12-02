@@ -5,11 +5,12 @@ from utils import config
 
 
 class BertInputFeatures(object):
-    def __init__(self, input_ids, input_mask, segment_ids, label_id):
+    def __init__(self, input_ids, input_mask, segment_ids, label_id, sample_id):
         self.input_ids = input_ids
         self.input_mask = input_mask
         self.segment_ids = segment_ids
         self.label_id = label_id
+        self.sample_id = sample_id
 
 
 def load_test_dataset(path):
@@ -82,6 +83,8 @@ def convert_examples_to_features(pandas, max_seq_length, tokenizer):
                 input_ids=input_ids,
                 input_mask=input_mask,
                 segment_ids=segment_ids,
-                label_id=r['label']))
+                label_id=r['label'],
+                sample_id=r['id']
+            ))
 
     return features
